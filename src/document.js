@@ -45,6 +45,20 @@ export class Document {
     removeEl(this, ref)
   }
 
+  updateAttrs (ref, attr) {
+    const el = this.refs[ref]
+    for (let i in attr) {
+      el.attr = attr[i]
+    }
+  }
+
+  updateStyle (ref, style) {
+    const el = this.refs[ref]
+    for (let i in style) {
+      el.style = style[i]
+    }
+  }
+
   addEvent (ref, type) {
     const el = this.refs[ref]
     const index = el.event.indexOf(type)
@@ -132,5 +146,9 @@ export class Element {
     }
 
     return result
+  }
+
+  $addListener (handler) {
+    // todo
   }
 }
