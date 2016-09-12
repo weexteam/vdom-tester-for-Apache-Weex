@@ -72,7 +72,7 @@ instance.watchDOMChanges(element, (target, changes) => { ... })
 
 // The history of `callNative` and `callJS`
 instance.history.callNative[{ timestamp, module, method, args }]
-instance.history.callJS[{ timestamp, type, args }]
+instance.history.callJS[{ timestamp, method, args }]
 instance.history.refresh[{ timestamp, data }]
 
 // Control the connection status to Weex JS runtime.

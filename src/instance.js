@@ -52,8 +52,8 @@ export class Instance {
 
         // Call the watchers on this task
         this.watchers.forEach(caller => {
-          if (!caller.moduleName || task.module === moduleName) {
-            if (!caller.methodName || task.method === methodName) {
+          if (!caller.moduleName || task.module === caller.moduleName) {
+            if (!caller.methodName || task.method === caller.methodName) {
               const args = clonePlainObject(task.args)
               if (!caller.methodName) {
                 args.unshift(task.method)
@@ -137,7 +137,7 @@ export class Instance {
     this.history.callJS.push({
       method: 'callback',
       timestamp: Date.now(),
-      args: clonePlainObject([ref, type, data, domChanges])
+      args: clonePlainObject([funcId, data, ifLast])
     })
     runtime.callJS(this.id, [{
       method: 'callback',
@@ -191,6 +191,6 @@ export class Instance {
   }
 }
 
-function clonePlainObject(obj) {
+function clonePlainObject (obj) {
   return JSON.parse(JSON.stringify(obj))
 }

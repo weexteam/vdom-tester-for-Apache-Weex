@@ -47,14 +47,14 @@ export class Document {
 
   updateAttrs (ref, attr) {
     const el = this.refs[ref]
-    for (let i in attr) {
+    for (const i in attr) {
       el.attr = attr[i]
     }
   }
 
   updateStyle (ref, style) {
     const el = this.refs[ref]
-    for (let i in style) {
+    for (const i in style) {
       el.style = style[i]
     }
   }
