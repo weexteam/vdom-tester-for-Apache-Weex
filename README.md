@@ -13,8 +13,8 @@ import {
   DEFAULT_COMPONENTS
 } from 'weex-vdom-tester'
 
-// Create a Weex JavaScript runtime.
-const runtime = new Runtime({
+// Create a Weex JavaScript runtime for a certain Weex JS framework.
+const runtime = new Runtime(jsFramework, {
   // modules: DEFAULT_MODULES,
   // components: DEFAULT_COMPONENTS
 })
@@ -30,9 +30,9 @@ runtime.registerModules({
     bar: (instance, document, ...args) => {}
   }
 })
-runtime.registerComponents({
-  x: { append: true }
-})
+runtime.registerComponents([
+  x: { type: 'x', append: true }
+])
 ```
 
 ### Weex instance APIs

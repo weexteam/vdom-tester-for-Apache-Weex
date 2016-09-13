@@ -1,10 +1,13 @@
 import { Document } from './document'
 import { Runtime } from './runtime'
+import { clonePlainObject } from './util'
 
 export class Instance {
   constrcutor (runtime) {
     this._runtime = runtime || new Runtime()
+    this._target = this._runtime.target
     this.id = this._runtime._genInstanceId()
+    this._runtime.instanceMap[this.id] = this
     this.doc = new Document(this.id)
     this.lastDoc = null
     this.active = true
@@ -19,7 +22,8 @@ export class Instance {
   }
   _initCall () {
     const runtime = this._runtime
-    runtime.callNative = (id, tasks) => {
+    const target = this._target
+    target.callNative = (id, tasks) => {
       if (!this.active) {
         return
       }
@@ -72,14 +76,14 @@ export class Instance {
     if (!this.active) {
       return
     }
-    const runtime = this._runtime
+    const target = this._target
     this.history.refresh.push({
       type: 'createInstance',
       timestamp: Date.now(),
       config: clonePlainObject(config),
       data: clonePlainObject(data)
     })
-    runtime.createInstance(
+    target.createInstance(
       this.id, code,
       clonePlainObject(config),
       clonePlainObject(data)
@@ -89,13 +93,13 @@ export class Instance {
     if (!this.active) {
       return
     }
-    const runtime = this._runtime
+    const target = this._target
     this.history.refresh.push({
       type: 'refreshInstance',
       timestamp: Date.now(),
       data: clonePlainObject(data)
     })
-    runtime.refreshInstance(
+    target.refreshInstance(
       this.id,
       clonePlainObject(data)
     )
@@ -105,25 +109,27 @@ export class Instance {
       return
     }
     const runtime = this._runtime
+    const target = this._target
     this.lastDoc = this.doc
     this.doc = null
     this.history.refresh.push({
       type: 'destroyInstance',
       timestamp: Date.now()
     })
-    runtime.destroyInstance(this.id)
+    target.destroyInstance(this.id)
+    delete runtime.instanceMap[this.id]
   }
   $fireEvent (ref, type, data, domChanges) {
     if (!this.active) {
       return
     }
-    const runtime = this._runtime
+    const target = this._target
     this.history.callJS.push({
       method: 'fireEvent',
       timestamp: Date.now(),
       args: clonePlainObject([ref, type, data, domChanges])
     })
-    runtime.callJS(this.id, [{
+    target.callJS(this.id, [{
       method: 'fireEvent',
       args: clonePlainObject([ref, type, data, domChanges])
     }])
@@ -132,13 +138,13 @@ export class Instance {
     if (!this.active) {
       return
     }
-    const runtime = this._runtime
+    const target = this._target
     this.history.callJS.push({
       method: 'callback',
       timestamp: Date.now(),
       args: clonePlainObject([funcId, data, ifLast])
     })
-    runtime.callJS(this.id, [{
+    target.callJS(this.id, [{
       method: 'callback',
       args: clonePlainObject([funcId, data, ifLast])
     }])
@@ -147,8 +153,8 @@ export class Instance {
     if (!this.active) {
       return
     }
-    const runtime = this._runtime
-    return clonePlainObject(runtime.getRoot(this.id))
+    const target = this._target
+    return clonePlainObject(target.getRoot(this.id))
   }
 
   oncall (moduleName, methodName, handler) {
@@ -188,8 +194,4 @@ export class Instance {
   pause () {
     this.active = false
   }
-}
-
-function clonePlainObject (obj) {
-  return JSON.parse(JSON.stringify(obj))
 }
