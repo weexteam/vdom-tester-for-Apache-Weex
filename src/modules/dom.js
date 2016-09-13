@@ -46,17 +46,15 @@ function updateFinish (instance, document) {
   console.log(`[updateFinish]: ${instance.id}`)
 }
 
-export default {
-  scrollToElement,
-  createBody,
-  addElement,
-  removeElement,
-  moveElement,
-  addEvent,
-  removeEvent,
-  updateAttrs,
-  updateStyle,
-  createFinish,
-  refreshFinish,
-  updateFinish
-}
+exports.scrollToElement = scrollToElement
+exports.createBody = createBody
+exports.addElement = addElement
+exports.removeElement = removeElement
+exports.moveElement = moveElement
+exports.addEvent = addEvent
+exports.removeEvent = removeEvent
+exports.updateAttrs = updateAttrs
+exports.updateStyle = updateStyle
+exports.createFinish = createFinish
+exports.refreshFinish = refreshFinish
+exports.updateFinish = updateFinish

@@ -7,11 +7,11 @@
     "prepare": "npm run clear && npm run lint && npm run build",
     "pretest": "npm run prepare",
     "prepublish": "npm run prepare",
-    "build": "node_modules/babel-cli/bin/babel.js src --out-dir lib",
+    "build": "buble -i src -o lib",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",
     "test": "mocha",
-    "clear": "rm -f lib/*"
+    "clear": "rm -Rf lib/*"
   },
   "repository": {
     "type": "git",
@@ -27,14 +27,8 @@
     "url": "https://github.com/weexteam/weex-vdom-tester/issues"
   },
   "homepage": "https://github.com/weexteam/weex-vdom-tester#readme",
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
-  },
   "devDependencies": {
-    "babel-cli": "^6.14.0",
-    "babel-preset-es2015": "^6.14.0",
+    "buble": "^0.13.2",
     "chai": "^3.5.0",
     "eslint": "^3.5.0",
     "mocha": "^3.0.2",

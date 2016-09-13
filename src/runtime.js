@@ -1,10 +1,10 @@
-import {
+const {
   DEFAULT_MODULES,
   DEFAULT_COMPONENTS,
   DEFAULT_ENV
-} from './env/default'
-import defaultModules from './modules/index'
-import { clonePlainObject } from './util'
+} = require('./env/default')
+const defaultModules = require('./modules/index')
+const { clonePlainObject } = require('./util')
 
 const LOG_LEVELS = [
   '__DEBUG',
@@ -14,7 +14,7 @@ const LOG_LEVELS = [
   '__ERROR'
 ]
 
-export class Runtime {
+class Runtime {
   constructor (jsFramework, options) {
     // Init instance management.
     this.instanceMap = {}
@@ -107,3 +107,5 @@ export class Runtime {
     return this._nextInstanceId++
   }
 }
+
+exports.Runtime = Runtime

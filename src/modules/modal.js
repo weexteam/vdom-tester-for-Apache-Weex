@@ -29,9 +29,7 @@ function prompt (instance, document, options, funcId) {
   }, 1000)
 }
 
-export default {
-  toast,
-  alert,
-  confirm,
-  prompt
-}
+exports.toast = toast
+exports.alert = alert
+exports.confirm = confirm
+exports.prompt = prompt

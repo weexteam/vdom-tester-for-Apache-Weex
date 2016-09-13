@@ -1,8 +1,8 @@
-import { Document } from './document'
-import { Runtime } from './runtime'
-import { clonePlainObject } from './util'
+const { Document } = require('./document')
+const { Runtime } = require('./runtime')
+const { clonePlainObject } = require('./util')
 
-export class Instance {
+class Instance {
   constrcutor (runtime) {
     this._runtime = runtime || new Runtime()
     this._target = this._runtime.target
@@ -196,3 +196,5 @@ export class Instance {
     this.active = false
   }
 }
+
+exports.Instance = Instance

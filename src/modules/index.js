@@ -1,9 +1,3 @@
-import dom from './dom'
-import timer from './timer'
-import modal from './modal'
-
-export default {
-  dom,
-  timer,
-  modal
-}
+exports.dom = require('./dom')
+exports.timer = require('./timer')
+exports.modal = require('./modal')

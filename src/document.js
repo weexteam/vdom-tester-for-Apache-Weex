@@ -2,7 +2,7 @@
  * @fileOverview dom module APIs
  */
 
-export class Document {
+class Document {
   constructor (id, URL) {
     this._id = id
     this._URL = URL
@@ -137,7 +137,7 @@ function removeEl (doc, ref) {
   })
 }
 
-export class Element {
+class Element {
   constructor (config) {
     this.ref = config.ref
     this.parentRef = config.parentRef
@@ -186,3 +186,6 @@ export class Element {
     this._listeners.push(handler)
   }
 }
+
+exports.Document = Document
+exports.Element = Element

@@ -22,9 +22,7 @@ function _clearInterval (instance, document, funcId) {
   clearInterval(instance.extension.timer[funcId])
 }
 
-export default {
-  setTimeout: _setTimeout,
-  clearTimeout: _clearTimeout,
-  setInterval: _setInterval,
-  clearInterval: _clearInterval
-}
+exports.setTimeout = _setTimeout
+exports.clearTimeout = _clearTimeout
+exports.setInterval = _setInterval
+exports.clearInterval = _clearInterval

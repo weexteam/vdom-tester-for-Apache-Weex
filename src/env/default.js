@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-export const DEFAULT_MODULES = [{
+const DEFAULT_MODULES = [{
   "dom": [
     "addEvent",
     "removeElement",
@@ -106,7 +106,7 @@ export const DEFAULT_MODULES = [{
   ]
 }]
 
-export const DEFAULT_COMPONENTS = [
+const DEFAULT_COMPONENTS = [
   "container",
   "div",
   "text",
@@ -129,7 +129,7 @@ export const DEFAULT_COMPONENTS = [
   { "append": "tree", "type": "textarea" }
 ]
 
-export const DEFAULT_ENV = {
+const DEFAULT_ENV = {
   "scale": 2,
   "appVersion": "1.8.3",
   "deviceModel": "x86_64",
@@ -141,3 +141,7 @@ export const DEFAULT_ENV = {
   "logLevel": "log",
   "deviceWidth": 750
 }
+
+exports.DEFAULT_MODULES = DEFAULT_MODULES
+exports.DEFAULT_COMPONENTS = DEFAULT_COMPONENTS
+exports.DEFAULT_ENV = DEFAULT_ENV
