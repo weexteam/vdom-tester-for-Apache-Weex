@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export const DEFAULT_MODULES = [{
   "dom": [
     "addEvent",

@@ -1,6 +1,6 @@
 import {
-  DEFAULT_MODULES
-  DEFAULT_COMPONENTS
+  DEFAULT_MODULES,
+  DEFAULT_COMPONENTS,
   DEFAULT_ENV
 } from './env/default'
 import defaultModules from './modules/index'
@@ -20,7 +20,7 @@ export class Runtime {
     this.target.nativeLog = function (...args) {
       console.log(...args)
     }
-    this.callNative = (id, tasks) {
+    this.callNative = (id, tasks) => {
       if (this.instanceMap[id]) {
         this.instanceMap[id].callNative(id, tasks)
       }
@@ -37,9 +37,9 @@ export class Runtime {
   registerModules (modules) {
     const target = this.target
     modules.forEach(module => {
-      const registration = []
-      const functions = {}
       for (const name in module) {
+        let registration = []
+        let functions = {}
         const methods = module[name]
         if (Array.isArray(methods)) {
           // Handle default modules
@@ -53,9 +53,9 @@ export class Runtime {
           registration = Object.keys(methods)
           functions = methods
         }
+        this.modules[name] = functions
+        target.registerModules(registration)
       }
-      target.registerModules(registration)
-      this.modules[name] = functions
     })
   }
   registerComponents (components) {
