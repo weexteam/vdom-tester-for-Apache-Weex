@@ -26,8 +26,8 @@ runtime.onlog(type, (args) => { ... })
 // Register more modules and components.
 runtime.registerModules({
   x: {
-    foo: () => {},
-    bar: () => {}
+    foo: (instance, document, ...args) => {},
+    bar: (instance, document, ...args) => {}
   }
 })
 runtime.registerComponents({
@@ -59,8 +59,9 @@ instance.oncall(moduleName, methodName, (args) => { ... })
 instance.oncall((moduleName, methodName, args) => { ... })
 
 // Mock default behavior of module APIs
-instance.mockModuleAPI(moduleName, (methodName, args) => { ... })
-instance.mockModuleAPI(moduleName, methodName, (args) => { ... })
+instance.mockModuleAPI(
+  moduleName, methodName,
+  (instance, document, originFunc, ...args) => { ... })
 
 // Get JSON object from the real instance document.
 instance.getRealRoot()

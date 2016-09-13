@@ -28,21 +28,20 @@ export class Instance {
       }
       tasks.forEach(task => {
         // Execute real or mocked module API.
+        const module = runtime.modules[task.module] || {}
+        const method = module[task.method]
         if (this.spyMap[task.module] && this.spyMap[task.module][task.method]) {
           const args = clonePlainObject(task.args)
           args.unshift(this)
           args.unshift(this.doc)
+          args.unshift(method)
           this.spyMap[task.module][task.method].apply(null, args)
         }
-        else {
-          const module = runtime.modules[task.module] || {}
-          const method = module[task.method]
-          if (method) {
-            const args = clonePlainObject(task.args)
-            args.unshift(this)
-            args.unshift(this.doc)
-            method.apply(null, args)
-          }
+        else if (method) {
+          const args = clonePlainObject(task.args)
+          args.unshift(this)
+          args.unshift(this.doc)
+          method.apply(null, args)
         }
 
         // Record callNative history.
