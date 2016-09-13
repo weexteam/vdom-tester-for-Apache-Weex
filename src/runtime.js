@@ -6,6 +6,14 @@ import {
 import defaultModules from './modules/index'
 import { clonePlainObject } from './util'
 
+const LOG_LEVELS = [
+  '__DEBUG',
+  '__LOG',
+  '__INFO',
+  '__WARN',
+  '__ERROR'
+]
+
 export class Runtime {
   constructor (jsFramework, options) {
     // Init instance management.
@@ -17,8 +25,25 @@ export class Runtime {
     this.target.WXEnvironment = clonePlainObject(options.env || DEFAULT_ENV)
 
     // Bind global methods for JS framework.
+    this.loggers = []
     this.target.nativeLog = function (...args) {
-      console.log(...args)
+      const level = args[args.length - 1]
+      let levelIndex = LOG_LEVELS.indexOf(level)
+      if (levelIndex === -1) {
+        levelIndex = 1
+      }
+      else {
+        args.pop()
+      }
+      this.loggers.forEach(logger => {
+        if (!logger.level) {
+          args.unshift(level.substr(2).toLowerCase())
+          logger.handler.apply(null, args)
+        }
+        else if (LOG_LEVELS.indexOf(logger.level) === levelIndex) {
+          logger.handler.apply(null, args)
+        }
+      })
     }
     this.callNative = (id, tasks) => {
       if (this.instanceMap[id]) {
@@ -32,7 +57,23 @@ export class Runtime {
     this.registerComponents(options.components || DEFAULT_COMPONENTS)
   }
   onlog (type, handler) {
-    // todo
+    if (typeof type === 'function') {
+      handler = type
+      type = ''
+    }
+    const level = ''
+    if (LOG_LEVELS.indexOf(level) >= 0) {
+      level = '__' + type.toUpperCase()
+    }
+    this.loggers.push({ level, handler })
+  }
+  offlog (handler) {
+    this.loggers.some((logger, index) => {
+      if (logger.handler === handler) {
+        this.loggers.splice(index, 1)
+        return true
+      }
+    })
   }
   registerModules (modules) {
     const target = this.target

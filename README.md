@@ -22,6 +22,7 @@ const runtime = new Runtime(jsFramework, {
 // Listen `nativeLog` calls.
 runtime.onlog((type, args) => { ... })
 runtime.onlog(type, (args) => { ... })
+runtime.offlog((args) => { ... })
 
 // Register more modules and components.
 runtime.registerModules({
