@@ -22,7 +22,11 @@ export class Document {
   }
 
   addElement (parentRef, config, index) {
+    const parent = this.refs[parentRef]
     appendToDoc(this, config, parentRef, index)
+    if (parent) {
+      parent.$update({ addElement: config, index })
+    }
   }
 
   moveElement (ref, parentRef, index) {
@@ -39,10 +43,22 @@ export class Document {
     oldParent.children.splice(oldIndex, 1)
     parent.children.splice(index, 0, el)
     el.parentRef = parentRef
+
+    if (oldParent) {
+      oldParent.$update({ moveElement: ref, index })
+    }
+    if (parent && parent !== oldParent) {
+      parent.$update({ movedElement: ref, index })
+    }
   }
 
   removeElement (ref) {
+    const parentRef = this.refs[ref].parentRef
+    const parent = this.refs[parentRef]
     removeEl(this, ref)
+    if (parent) {
+      parent.$update({ removeElement: ref })
+    }
   }
 
   updateAttrs (ref, attr) {
@@ -50,6 +66,7 @@ export class Document {
     for (const i in attr) {
       el.attr = attr[i]
     }
+    el.$update({ attr })
   }
 
   updateStyle (ref, style) {
@@ -57,6 +74,7 @@ export class Document {
     for (const i in style) {
       el.style = style[i]
     }
+    el.$update({ style })
   }
 
   addEvent (ref, type) {
@@ -65,6 +83,7 @@ export class Document {
     if (index < 0) {
       el.event.push(type)
     }
+    el.$update({ addEvent: type })
   }
 
   removeEvent (ref, type) {
@@ -73,6 +92,7 @@ export class Document {
     if (index >= 0) {
       el.event.splice(index, 1)
     }
+    el.$update({ removeEvent: type })
   }
 
   toJSON () {
@@ -125,7 +145,8 @@ export class Element {
     this.attr = config.attr || {}
     this.style = config.style || {}
     this.event = config.event || []
-    this.children = [] // todo children
+    this.children = []
+    this._listeners = []
   }
 
   toJSON () {
@@ -148,7 +169,20 @@ export class Element {
     return result
   }
 
-  $addListener (handler) {
-    // todo
+  $update (changes) {
+    this._listeners.forEach(handler => handler.call(null, this, changes))
+    const parentRef = this.parentRef
+    const parent = doc.refs[parentRef]
+    if (parent) {
+      parent.$update(changes)
+    }
+  }
+
+  $addListener (doc, handler) {
+    if (this._listeners.indexOf(handler) >= 0) {
+      return
+    }
+    this.doc = doc
+    this._listeners.push(handler)
   }
 }

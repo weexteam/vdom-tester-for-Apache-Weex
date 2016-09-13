@@ -185,7 +185,7 @@ export class Instance {
       handler = element
       element = this.doc.body
     }
-    element.$addListener(handler)
+    element.$addListener(this.doc, handler)
   }
 
   play () {

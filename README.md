@@ -81,3 +81,12 @@ instance.history.refresh[{ timestamp, data }]
 instance.play()
 instance.pause()
 ```
+
+### Weex advanced APIs (experimental)
+
+```javascript
+runtime.test([inputFileOrCode, outputFileOrCode])
+runtime.test([inputFileOrCode, ...refreshs, outputFileOrCode])
+runtime.test([inputFileOrCode, ...events, outputFileOrCode])
+runtime.test([inputFileOrCode, ...mockCallbacks, outputFileOrCode])
+```
