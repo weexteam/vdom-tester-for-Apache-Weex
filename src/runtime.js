@@ -61,7 +61,7 @@ export class Runtime {
       handler = type
       type = ''
     }
-    const level = ''
+    let level = ''
     if (LOG_LEVELS.indexOf(level) >= 0) {
       level = '__' + type.toUpperCase()
     }

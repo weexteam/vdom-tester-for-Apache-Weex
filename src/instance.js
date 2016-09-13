@@ -12,6 +12,7 @@ export class Instance {
     this.lastDoc = null
     this.active = true
     this.watchers = []
+    this.extension = {}
     this.spyMap = {}
     this.history + {
       callNative: [],

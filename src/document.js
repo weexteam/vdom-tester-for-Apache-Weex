@@ -25,7 +25,7 @@ export class Document {
     const parent = this.refs[parentRef]
     appendToDoc(this, config, parentRef, index)
     if (parent) {
-      parent.$update({ addElement: config, index })
+      parent.$update(this, this, { addElement: config, index })
     }
   }
 
@@ -45,10 +45,10 @@ export class Document {
     el.parentRef = parentRef
 
     if (oldParent) {
-      oldParent.$update({ moveElement: ref, index })
+      oldParent.$update(this, { moveElement: ref, index })
     }
     if (parent && parent !== oldParent) {
-      parent.$update({ movedElement: ref, index })
+      parent.$update(this, { movedElement: ref, index })
     }
   }
 
@@ -57,7 +57,7 @@ export class Document {
     const parent = this.refs[parentRef]
     removeEl(this, ref)
     if (parent) {
-      parent.$update({ removeElement: ref })
+      parent.$update(this, { removeElement: ref })
     }
   }
 
@@ -66,7 +66,7 @@ export class Document {
     for (const i in attr) {
       el.attr = attr[i]
     }
-    el.$update({ attr })
+    el.$update(this, { attr })
   }
 
   updateStyle (ref, style) {
@@ -74,7 +74,7 @@ export class Document {
     for (const i in style) {
       el.style = style[i]
     }
-    el.$update({ style })
+    el.$update(this, { style })
   }
 
   addEvent (ref, type) {
@@ -83,7 +83,7 @@ export class Document {
     if (index < 0) {
       el.event.push(type)
     }
-    el.$update({ addEvent: type })
+    el.$update(this, { addEvent: type })
   }
 
   removeEvent (ref, type) {
@@ -92,7 +92,7 @@ export class Document {
     if (index >= 0) {
       el.event.splice(index, 1)
     }
-    el.$update({ removeEvent: type })
+    el.$update(this, { removeEvent: type })
   }
 
   toJSON () {
@@ -169,12 +169,12 @@ export class Element {
     return result
   }
 
-  $update (changes) {
-    this._listeners.forEach(handler => handler.call(null, this, changes))
+  $update (doc, changes) {
+    this._listeners.forEach(handler => handler(this, changes))
     const parentRef = this.parentRef
     const parent = doc.refs[parentRef]
     if (parent) {
-      parent.$update(changes)
+      parent.$update(doc, changes)
     }
   }
 
