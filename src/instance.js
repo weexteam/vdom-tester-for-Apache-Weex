@@ -3,7 +3,7 @@ const { Runtime } = require('./runtime')
 const { clonePlainObject } = require('./util')
 
 class Instance {
-  constrcutor (runtime) {
+  constructor (runtime) {
     this._runtime = runtime || new Runtime()
     this._target = this._runtime.target
     this.id = this._runtime._genInstanceId()
@@ -14,7 +14,7 @@ class Instance {
     this.watchers = []
     this.extension = {}
     this.spyMap = {}
-    this.history + {
+    this.history = {
       callNative: [],
       callJS: [],
       refresh: []
@@ -37,15 +37,15 @@ class Instance {
         const method = module[task.method]
         if (this.spyMap[task.module] && this.spyMap[task.module][task.method]) {
           const args = clonePlainObject(task.args)
-          args.unshift(this)
-          args.unshift(this.doc)
           args.unshift(method)
+          args.unshift(this.doc)
+          args.unshift(this)
           this.spyMap[task.module][task.method].apply(null, args)
         }
         else if (method) {
           const args = clonePlainObject(task.args)
-          args.unshift(this)
           args.unshift(this.doc)
+          args.unshift(this)
           method.apply(null, args)
         }
 
@@ -81,13 +81,13 @@ class Instance {
     this.history.refresh.push({
       type: 'createInstance',
       timestamp: Date.now(),
-      config: clonePlainObject(config),
-      data: clonePlainObject(data)
+      config: clonePlainObject(config || {}),
+      data: clonePlainObject(data || {})
     })
     target.createInstance(
       this.id, code,
-      clonePlainObject(config),
-      clonePlainObject(data)
+      clonePlainObject(config || {}),
+      clonePlainObject(data || {})
     )
   }
   $refresh (data) {
@@ -179,7 +179,7 @@ class Instance {
     this.spyMap[moduleName][methodName] = handler
   }
   getRealRoot () {
-    return this.doc.toJSON()
+    return this.doc.body.toJSON()
   }
   watchDOMChanges (element, handler) {
     if (typeof element === 'function') {

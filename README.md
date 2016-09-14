@@ -10,13 +10,15 @@ Virtual-DOM test driver for Weex.
 import {
   Runtime,
   DEFAULT_MODULES,
-  DEFAULT_COMPONENTS
+  DEFAULT_COMPONENTS,
+  DEFAULT_ENV
 } from 'weex-vdom-tester'
 
 // Create a Weex JavaScript runtime for a certain Weex JS framework.
 const runtime = new Runtime(jsFramework, {
   // modules: DEFAULT_MODULES,
   // components: DEFAULT_COMPONENTS
+  // env: DEFAULT_ENV
 })
 
 // Listen `nativeLog` calls.

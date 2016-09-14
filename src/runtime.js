@@ -16,6 +16,8 @@ const LOG_LEVELS = [
 
 class Runtime {
   constructor (jsFramework, options) {
+    options = options || {}
+
     // Init instance management.
     this.instanceMap = {}
     this._nextInstanceId = 1
@@ -103,7 +105,7 @@ class Runtime {
     const target = this.target
     components.forEach(component => target.registerComponents([component]))
   }
-  _getInsatnceId () {
+  _genInstanceId () {
     return this._nextInstanceId++
   }
 }
