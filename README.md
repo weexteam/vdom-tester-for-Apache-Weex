@@ -1,5 +1,7 @@
 # weex-vdom-tester
 
+[![CircleCI](https://circleci.com/gh/weexteam/weex-vdom-tester.svg?style=svg)](https://circleci.com/gh/weexteam/weex-vdom-tester)
+
 Virtual-DOM test driver for Weex.
 
 ## Usage
