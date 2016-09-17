@@ -32,9 +32,9 @@ describe('Vanilla Test', () => {
     const runtime = new Runtime(fooFramework)
     const instance = new Instance(runtime)
     const code = [
-      `callNative(${currentInstanceId}, [{ module: 'dom', method: 'createBody', args: [{ ref: '_root', type: 'div' }]}])`,
-      `callNative(${currentInstanceId}, [{ module: 'dom', method: 'addElement', args: ['_root', { ref: 'first', type: 'text', attr: { value: 'Hello' }}, -1]}])`,
-      `callNative(${currentInstanceId}, [{ module: 'dom', method: 'createFinish', args: []}])`
+      `callNative('${currentInstanceId}', [{ module: 'dom', method: 'createBody', args: [{ ref: '_root', type: 'div' }]}])`,
+      `callNative('${currentInstanceId}', [{ module: 'dom', method: 'addElement', args: ['_root', { ref: 'first', type: 'text', attr: { value: 'Hello' }}, -1]}])`,
+      `callNative('${currentInstanceId}', [{ module: 'dom', method: 'createFinish', args: []}])`
     ].join('\n')
     instance.$create(code)
     expect(instance.getRealRoot()).eql({ type: 'div', children: [ { type: 'text', attr: { value: 'Hello' } } ] })

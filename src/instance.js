@@ -6,7 +6,7 @@ class Instance {
   constructor (runtime) {
     this._runtime = runtime || new Runtime()
     this._target = this._runtime.target
-    this.id = this._runtime._genInstanceId()
+    this.id = this._runtime._genInstanceId().toString()
     this._runtime.instanceMap[this.id] = this
     this.doc = new Document(this.id)
     this.lastDoc = null
@@ -83,12 +83,14 @@ class Instance {
       timestamp: Date.now(),
       config: clonePlainObject(config || {}),
       data: clonePlainObject(data || {})
-    })
-    target.createInstance(
-      this.id, code,
-      clonePlainObject(config || {}),
-      clonePlainObject(data || {})
-    )
+    });
+    ((callNative) => {
+      target.createInstance(
+        this.id, code,
+        clonePlainObject(config || {}),
+        clonePlainObject(data || {})
+      )
+    })(this._target.callNative.bind(this._target))
   }
   $refresh (data) {
     if (!this.active) {
@@ -130,7 +132,7 @@ class Instance {
       timestamp: Date.now(),
       args: clonePlainObject([ref, type, data, domChanges])
     })
-    target.callJS(this.id, [{
+    target.receiveTasks(this.id, [{
       method: 'fireEvent',
       args: clonePlainObject([ref, type, data, domChanges])
     }])
@@ -145,7 +147,7 @@ class Instance {
       timestamp: Date.now(),
       args: clonePlainObject([funcId, data, ifLast])
     })
-    target.callJS(this.id, [{
+    target.receiveTasks(this.id, [{
       method: 'callback',
       args: clonePlainObject([funcId, data, ifLast])
     }])
@@ -179,7 +181,7 @@ class Instance {
     this.spyMap[moduleName][methodName] = handler
   }
   getRealRoot () {
-    return this.doc.body.toJSON()
+    return this.doc.body ? this.doc.body.toJSON() : {}
   }
   watchDOMChanges (element, handler) {
     if (typeof element === 'function') {

@@ -97,7 +97,7 @@ class Runtime {
           functions = methods
         }
         this.modules[name] = functions
-        target.registerModules(registration)
+        target.registerModules({ [name]: registration })
       }
     })
   }

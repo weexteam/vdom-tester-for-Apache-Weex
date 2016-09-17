@@ -64,7 +64,7 @@ class Document {
   updateAttrs (ref, attr) {
     const el = this.refs[ref]
     for (const i in attr) {
-      el.attr = attr[i]
+      el.attr[i] = attr[i]
     }
     el.$update(this, { attr })
   }
@@ -72,7 +72,7 @@ class Document {
   updateStyle (ref, style) {
     const el = this.refs[ref]
     for (const i in style) {
-      el.style = style[i]
+      el.style[i] = style[i]
     }
     el.$update(this, { style })
   }
