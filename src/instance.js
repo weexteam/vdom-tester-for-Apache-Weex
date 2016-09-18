@@ -83,9 +83,9 @@ class Instance {
       timestamp: Date.now(),
       config: clonePlainObject(config || {}),
       data: clonePlainObject(data || {})
-    });
-    ((callNative) => {
-      target.createInstance(
+    })
+    return ((callNative) => {
+      return target.createInstance(
         this.id, code,
         clonePlainObject(config || {}),
         clonePlainObject(data || {})
@@ -102,7 +102,7 @@ class Instance {
       timestamp: Date.now(),
       data: clonePlainObject(data)
     })
-    target.refreshInstance(
+    return target.refreshInstance(
       this.id,
       clonePlainObject(data)
     )

@@ -118,7 +118,7 @@ const DEFAULT_COMPONENTS = [
   { "append": "tree", "type": "embed" },
   { "append": "tree", "type": "a" },
   { "append": "tree", "type": "switch" },
-  { "append": "tree", "type": "input" },
+  { "type": "input" }, // append: tree
   { "append": "tree", "type": "video" },
   { "append": "tree", "type": "indicator" },
   { "append": "tree", "type": "slider" },
