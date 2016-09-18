@@ -84,12 +84,11 @@ class Instance {
       config: clonePlainObject(config || {}),
       data: clonePlainObject(data || {})
     })
+    config = clonePlainObject(config || {})
+    data = clonePlainObject(data || {})
+    config.env = clonePlainObject(target.WXEnvironment || {})
     return ((callNative) => {
-      return target.createInstance(
-        this.id, code,
-        clonePlainObject(config || {}),
-        clonePlainObject(data || {})
-      )
+      return target.createInstance(this.id, code, config, data)
     })(this._target.callNative.bind(this._target))
   }
   $refresh (data) {
