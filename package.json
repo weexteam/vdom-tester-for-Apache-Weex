@@ -8,6 +8,7 @@
     "pretest": "npm run prepare",
     "prepublish": "npm run prepare",
     "build": "buble -i src -o lib",
+    "dev": "gazeer -p \"src/*.js\" -c \"npm run lint && npm run build\"",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",
     "test": "mocha",
@@ -32,6 +33,7 @@
     "buble": "^0.13.2",
     "chai": "^3.5.0",
     "eslint": "^3.5.0",
+    "gazeer": "^0.1.1",
     "mocha": "^3.0.2",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0"

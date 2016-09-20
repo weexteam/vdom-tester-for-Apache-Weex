@@ -45,12 +45,19 @@ const initDocJSON = {
 describe('Document Class', () => {
   let doc
 
+  before(() => {
+    sinon.stub(console, 'error')
+  })
+  after(() => {
+    console.error.restore()
+  })
   beforeEach(() => {
     doc = new Document('foo', 'https://github.com/')
   })
   afterEach(() => {
     doc = null
   })
+
   it('create by constructor', () => {
     expect(doc).is.an.object
     expect(doc._id).eql('foo')
@@ -335,6 +342,13 @@ describe('Document Class', () => {
 })
 
 describe('Element Class', () => {
+  before(() => {
+    sinon.stub(console, 'error')
+  })
+  after(() => {
+    console.error.restore()
+  })
+
   it('create by constructor', () => {
     const el = new Element({ ref: 'x', parentRef: 'y', type: 'text' })
     expect(el.ref).is.an.string

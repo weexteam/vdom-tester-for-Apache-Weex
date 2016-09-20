@@ -1,5 +1,5 @@
 function scrollToElement (instance, document, ref, options) {
-  console.log(`[scrollToElement]: ${instance.id}, ${ref}, ${options}`)
+  console.log(`[scrollToElement]: ${instance.id}, ${ref}, ${JSON.stringify(options)}`)
 }
 
 function createBody (instance, document, element) {
