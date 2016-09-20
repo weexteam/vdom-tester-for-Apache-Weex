@@ -2,6 +2,8 @@
  * @fileOverview dom module APIs
  */
 
+const ROOT_TYPE_LIST = ['div', 'container', 'list', 'scroller']
+
 class Document {
   constructor (id, URL) {
     this._id = id
@@ -11,18 +13,61 @@ class Document {
   }
 
   createBody (config) {
-    const doc = this
+    // validate config existed
+    if (!config) {
+      console.error(`[document] createBody() should have config.`)
+      return
+    }
+
+    // force set ref to '_root'
+    config.ref = '_root'
+
+    // validate type
+    if (ROOT_TYPE_LIST.indexOf(config.type) < 0) {
+      console.error(`[document] root type "${config.type}" must be one of <${ROOT_TYPE_LIST.join('>, <')}>`)
+      return
+    }
+
     const body = this.body = new Element(config)
     this.refs._root = this.body
     if (config.children) {
-      config.children.forEach(function (child) {
-        appendToDoc(doc, child, body.ref, -1)
+      config.children.forEach(child => {
+        appendToDoc(this, child, body.ref, -1)
       })
     }
   }
 
   addElement (parentRef, config, index) {
+    // validate config
+    if (!config) {
+      console.error(`[document] addElement() should have config.`)
+      return
+    }
+
+    // validate ref
+    if (!config.ref) {
+      console.error(`[document] addElement() should have ref.`)
+      return
+    }
+    if (this.refs[config.ref]) {
+      console.error(`[document] addElement() the ref "${config.ref}" has been existed.`)
+      return
+    }
+
+    // validate type
+    if (!config.type) {
+      console.error(`[document] addElement() should have type.`)
+      return
+    }
+
     const parent = this.refs[parentRef]
+
+    // validate parentRef
+    if (!parent) {
+      console.error(`[document] addElement() parent ref "${parentRef}" is not existed.`)
+      return
+    }
+
     appendToDoc(this, config, parentRef, index)
     if (parent) {
       parent.$update(this, this, { addElement: config, index })
@@ -170,12 +215,12 @@ class Element {
   }
 
   $update (doc, changes) {
-    this._listeners.forEach(handler => handler(this, changes))
-    const parentRef = this.parentRef
-    const parent = doc.refs[parentRef]
-    if (parent) {
-      parent.$update(doc, changes)
-    }
+    // this._listeners.forEach(handler => handler(this, changes))
+    // const parentRef = this.parentRef
+    // const parent = doc.refs[parentRef]
+    // if (parent) {
+    //   parent.$update(doc, changes)
+    // }
   }
 
   $addListener (doc, handler) {

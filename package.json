@@ -11,6 +11,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",
     "test": "mocha",
+    "test:dev": "mocha -w",
     "clear": "rm -Rf lib/*"
   },
   "repository": {
