@@ -6,40 +6,41 @@ chai.use(sinonChai)
 
 const { Document, Element } = require('../lib/document')
 
+const basicRootConfig = {
+  type: 'div',
+  attr: { x: 'a' },
+  style: { y: 'b' }
+}
+const basicElementConfig = {
+  ref: '1',
+  type: 'div',
+  attr: { x: 'a' },
+  children: [
+    { ref: '2', type: 'text', attr: { value: 'Hello' }}
+  ]
+}
+function initDoc(doc) {
+  doc.createBody(basicRootConfig)
+  doc.addElement(doc.body.ref, basicElementConfig, -1)
+  doc.addElement(
+    doc.body.children[0].ref,
+    { ref: '3', type: 'text', attr: { value: 'World' }},
+    0)
+}
+const initDocJSON = {
+  type: 'div',
+  attr: { x: 'a' },
+  style: { y: 'b' },
+  children: [
+    { type: 'div', attr: { x: 'a' }, children: [
+      { type: 'text', attr: { value: 'World' }},
+      { type: 'text', attr: { value: 'Hello' }}
+    ]}
+  ]
+}
+
 describe('Document Class', () => {
   let doc
-  const basicRootConfig = {
-    type: 'div',
-    attr: { x: 'a' },
-    style: { y: 'b' }
-  }
-  const basicElementConfig = {
-    ref: '1',
-    type: 'div',
-    attr: { x: 'a' },
-    children: [
-      { ref: '2', type: 'text', attr: { value: 'Hello' }}
-    ]
-  }
-  function initDoc(doc) {
-    doc.createBody(basicRootConfig)
-    doc.addElement(doc.body.ref, basicElementConfig, -1)
-    doc.addElement(
-      doc.body.children[0].ref,
-      { ref: '3', type: 'text', attr: { value: 'World' }},
-      0)
-  }
-  const initDocJSON = {
-    type: 'div',
-    attr: { x: 'a' },
-    style: { y: 'b' },
-    children: [
-      { type: 'div', attr: { x: 'a' }, children: [
-        { type: 'text', attr: { value: 'World' }},
-        { type: 'text', attr: { value: 'Hello' }}
-      ]}
-    ]
-  }
 
   beforeEach(() => {
     doc = new Document('foo', 'https://github.com/')
@@ -327,5 +328,57 @@ describe('Document Class', () => {
     doc.removeEvent(ref, 'click')
     delete result.children[0].event
     expect(doc.toJSON()).eql(result)
+  })
+})
+
+describe('Element Class', () => {
+  it('create by constructor', () => {
+    const el = new Element({ ref: 'x', parentRef: 'y', type: 'text' })
+    expect(el.ref).is.an.string
+    expect(el.parentRef).is.an.string
+    expect(el.type).is.an.string
+    expect(el.attr).is.an.object
+    expect(el.style).is.an.object
+    expect(el.event).is.an.array
+    expect(el.children).is.an.array
+    expect(el._listeners).is.an.array
+  })
+  it('$addListener (doc, handler), $update(doc, changes)', () => {
+    const doc = new Document('foo', 'https://github.com/')
+    initDoc(doc)
+    expect(doc.toJSON()).eql(initDocJSON)
+    const el = doc.body.children[0]
+    const spy = sinon.spy()
+    const childSpy = sinon.spy()
+    const parentSpy = sinon.spy()
+
+    el.$addListener(doc, spy)
+    doc.body.$addListener(doc, parentSpy)
+    el.children[0].$addListener(doc, childSpy)
+
+    expect(el._listeners.length).eql(1)
+    expect(doc.body._listeners.length).eql(1)
+    expect(el.children[0]._listeners.length).eql(1)
+    expect(el._listeners[0]).equal(spy)
+
+    expect(spy.args.length).eql(0)
+    expect(parentSpy.args.length).eql(0)
+    expect(childSpy.args.length).eql(0)
+
+    // updateAttrs/updateStyle/addEvent/removeEvent
+    doc.updateAttrs(el.ref, { x: 'c' })
+    expect(spy.args.length).eql(1)
+    doc.updateAttrs(el.ref, { x: 'c' })
+    expect(spy.args.length).eql(2)
+    doc.updateStyle(el.ref, { x: 'c' })
+    expect(spy.args.length).eql(3)
+    doc.addEvent(el.ref, 'click')
+    expect(spy.args.length).eql(4)
+    doc.removeEvent(el.ref, 'click')
+    expect(spy.args.length).eql(5)
+    expect(parentSpy.args.length).eql(5)
+    expect(childSpy.args.length).eql(0)
+
+    // addElement/moveElement/removeElement
   })
 })

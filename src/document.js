@@ -76,7 +76,7 @@ class Document {
 
     appendToDoc(this, config, parentRef, index)
     if (parent) {
-      parent.$update(this, this, { addElement: config, index })
+      parent.$update(this, { addElement: config, index })
     }
   }
 
@@ -264,13 +264,17 @@ class Element {
     return clonePlainObject(result)
   }
 
-  $update (doc, changes) {
-    // this._listeners.forEach(handler => handler(this, changes))
-    // const parentRef = this.parentRef
-    // const parent = doc.refs[parentRef]
-    // if (parent) {
-    //   parent.$update(doc, changes)
-    // }
+  $update (doc, changes, level) {
+    level = level || 0
+    this._listeners.forEach(handler => {
+      return handler(this, changes)
+    })
+    const parentRef = this.parentRef
+    const parent = doc.refs[parentRef]
+    if (parent) {
+      level++
+      parent.$update(doc, changes, level)
+    }
   }
 
   $addListener (doc, handler) {
