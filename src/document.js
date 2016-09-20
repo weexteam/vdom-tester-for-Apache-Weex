@@ -75,9 +75,7 @@ class Document {
     }
 
     appendToDoc(this, config, parentRef, index)
-    if (parent) {
-      parent.$update(this, { addElement: config, index })
-    }
+    parent.$update(this, parentRef, { addElement: config, index })
   }
 
   moveElement (ref, parentRef, index) {
@@ -101,6 +99,11 @@ class Document {
       return
     }
 
+    if (contains(this, ref, parentRef)) {
+      console.error(`[document] moveElement() the ref "${ref}" has contained parent ref "${parentRef}".`)
+      return
+    }
+
     const el = this.refs[ref]
     const oldParent = this.refs[el.parentRef]
     const oldIndex = oldParent.children.indexOf(el)
@@ -116,10 +119,10 @@ class Document {
     el.parentRef = parentRef
 
     if (oldParent) {
-      oldParent.$update(this, { moveElement: ref, index })
+      oldParent.$update(this, oldParent.ref, { moveElement: ref, index })
     }
     if (parent && parent !== oldParent) {
-      parent.$update(this, { movedElement: ref, index })
+      parent.$update(this, parentRef, { movedElement: ref, index })
     }
   }
 
@@ -149,9 +152,7 @@ class Document {
     const parent = this.refs[parentRef]
 
     removeEl(this, ref)
-    if (parent) {
-      parent.$update(this, { removeElement: ref })
-    }
+    parent.$update(this, parentRef, { removeElement: ref })
   }
 
   updateAttrs (ref, attr) {
@@ -160,7 +161,7 @@ class Document {
     for (const i in attr) {
       el.attr[i] = attr[i]
     }
-    el.$update(this, { attr })
+    el.$update(this, ref, { attr })
   }
 
   updateStyle (ref, style) {
@@ -169,7 +170,7 @@ class Document {
     for (const i in style) {
       el.style[i] = style[i]
     }
-    el.$update(this, { style })
+    el.$update(this, ref, { style })
   }
 
   addEvent (ref, type) {
@@ -178,7 +179,7 @@ class Document {
     if (index < 0) {
       el.event.push(type)
     }
-    el.$update(this, { addEvent: type })
+    el.$update(this, ref, { addEvent: type })
   }
 
   removeEvent (ref, type) {
@@ -187,7 +188,7 @@ class Document {
     if (index >= 0) {
       el.event.splice(index, 1)
     }
-    el.$update(this, { removeEvent: type })
+    el.$update(this, ref, { removeEvent: type })
   }
 
   toJSON () {
@@ -197,6 +198,20 @@ class Document {
     }
     return {}
   }
+}
+
+function contains (doc, refA, refB) {
+  const elB = doc.refs[refB]
+  let parentRef = elB.parentRef
+  let parent = doc.refs[parentRef]
+  while (parent) {
+    if (parentRef === refA) {
+      return true
+    }
+    parentRef = parent.parentRef
+    parent = doc.refs[parentRef]
+  }
+  return false
 }
 
 function appendToDoc (doc, config, parentRef, index) {
@@ -264,16 +279,16 @@ class Element {
     return clonePlainObject(result)
   }
 
-  $update (doc, changes, level) {
+  $update (doc, ref, changes, level) {
     level = level || 0
     this._listeners.forEach(handler => {
-      return handler(this, changes)
+      return handler(ref, changes)
     })
     const parentRef = this.parentRef
     const parent = doc.refs[parentRef]
     if (parent) {
       level++
-      parent.$update(doc, changes, level)
+      parent.$update(doc, ref, changes, level)
     }
   }
 
