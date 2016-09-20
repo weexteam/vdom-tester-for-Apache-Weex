@@ -8,10 +8,37 @@ const { Document, Element } = require('../lib/document')
 
 describe('Document Class', () => {
   let doc
-  const basicConfig = {
+  const basicRootConfig = {
     type: 'div',
     attr: { x: 'a' },
     style: { y: 'b' }
+  }
+  const basicElementConfig = {
+    ref: '1',
+    type: 'div',
+    attr: { x: 'a' },
+    children: [
+      { ref: '2', type: 'text', attr: { value: 'Hello' }}
+    ]
+  }
+  function initDoc(doc) {
+    doc.createBody(basicRootConfig)
+    doc.addElement(doc.body.ref, basicElementConfig, -1)
+    doc.addElement(
+      doc.body.children[0].ref,
+      { ref: '3', type: 'text', attr: { value: 'World' }},
+      0)
+  }
+  const initDocJSON = {
+    type: 'div',
+    attr: { x: 'a' },
+    style: { y: 'b' },
+    children: [
+      { type: 'div', attr: { x: 'a' }, children: [
+        { type: 'text', attr: { value: 'World' }},
+        { type: 'text', attr: { value: 'Hello' }}
+      ]}
+    ]
   }
 
   beforeEach(() => {
@@ -26,7 +53,7 @@ describe('Document Class', () => {
     expect(doc._URL).eql('https://github.com/')
   })
   it('create body', () => {
-    doc.createBody(basicConfig)
+    doc.createBody(basicRootConfig)
     expect(doc.body).is.an.object
     expect(doc.body.type).eql('div')
     expect(doc.body.attr).eql({ x: 'a' })
@@ -61,11 +88,8 @@ describe('Document Class', () => {
     expect(doc.body).is.null
   })
   it('addElement (parentRef, config, index)', () => {
-    doc.createBody(basicConfig)
-    doc.addElement(
-      doc.body.ref,
-      { ref: '1', type: 'div', attr: { x: 'a' }, children: [{ ref: '2', type: 'text', attr: { value: 'Hello' }}]},
-      -1)
+    doc.createBody(basicRootConfig)
+    doc.addElement(doc.body.ref, basicElementConfig, -1)
     expect(doc.toJSON()).eql({
       type: 'div',
       attr: { x: 'a' },
@@ -130,24 +154,178 @@ describe('Document Class', () => {
     })
   })
   it('moveElement (ref, parentRef, index)', () => {
-    // todo
+    initDoc(doc)
+    expect(doc.toJSON()).eql(initDocJSON)
+
+    const parentRef = doc.body.children[0].ref
+
+    // move first to first (no effect)
+    doc.moveElement(doc.body.children[0].children[0].ref, parentRef, 0)
+    expect(doc.toJSON()).eql({
+      type: 'div',
+      attr: { x: 'a' },
+      style: { y: 'b' },
+      children: [
+        { type: 'div', attr: { x: 'a' }, children: [
+          { type: 'text', attr: { value: 'World' }},
+          { type: 'text', attr: { value: 'Hello' }}
+        ]}
+      ]
+    })
+
+    // move first to middle (no effect)
+    doc.moveElement(doc.body.children[0].children[0].ref, parentRef, 1)
+    expect(doc.toJSON()).eql({
+      type: 'div',
+      attr: { x: 'a' },
+      style: { y: 'b' },
+      children: [
+        { type: 'div', attr: { x: 'a' }, children: [
+          { type: 'text', attr: { value: 'World' }},
+          { type: 'text', attr: { value: 'Hello' }}
+        ]}
+      ]
+    })
+
+    // move first to bottom
+    doc.moveElement(doc.body.children[0].children[0].ref, parentRef, 2)
+    expect(doc.toJSON()).eql({
+      type: 'div',
+      attr: { x: 'a' },
+      style: { y: 'b' },
+      children: [
+        { type: 'div', attr: { x: 'a' }, children: [
+          { type: 'text', attr: { value: 'Hello' }},
+          { type: 'text', attr: { value: 'World' }}
+        ]}
+      ]
+    })
+
+    // move bottom to bottom (no effect)
+    doc.moveElement(doc.body.children[0].children[1].ref, parentRef, 2)
+    expect(doc.toJSON()).eql({
+      type: 'div',
+      attr: { x: 'a' },
+      style: { y: 'b' },
+      children: [
+        { type: 'div', attr: { x: 'a' }, children: [
+          { type: 'text', attr: { value: 'Hello' }},
+          { type: 'text', attr: { value: 'World' }}
+        ]}
+      ]
+    })
+
+    // move bottom to middle (no effect)
+    doc.moveElement(doc.body.children[0].children[1].ref, parentRef, 1)
+    expect(doc.toJSON()).eql({
+      type: 'div',
+      attr: { x: 'a' },
+      style: { y: 'b' },
+      children: [
+        { type: 'div', attr: { x: 'a' }, children: [
+          { type: 'text', attr: { value: 'World' }},
+          { type: 'text', attr: { value: 'Hello' }}
+        ]}
+      ]
+    })
+
+    // move bottom to first
+    doc.moveElement(doc.body.children[0].children[1].ref, parentRef, 0)
+    expect(doc.toJSON()).eql({
+      type: 'div',
+      attr: { x: 'a' },
+      style: { y: 'b' },
+      children: [
+        { type: 'div', attr: { x: 'a' }, children: [
+          { type: 'text', attr: { value: 'Hello' }},
+          { type: 'text', attr: { value: 'World' }}
+        ]}
+      ]
+    })
+
+    // move to other parent
+    doc.moveElement(doc.body.children[0].children[1].ref, doc.body.ref, 0)
+    expect(doc.toJSON()).eql({
+      type: 'div',
+      attr: { x: 'a' },
+      style: { y: 'b' },
+      children: [
+        { type: 'text', attr: { value: 'World' }},
+        { type: 'div', attr: { x: 'a' }, children: [
+          { type: 'text', attr: { value: 'Hello' }}
+        ]}
+      ]
+    })
   })
   it('removeElement (ref)', () => {
-    // todo
+    initDoc(doc)
+    expect(doc.toJSON()).eql(initDocJSON)
+
+    // remove single element
+    doc.removeElement(doc.body.children[0].children[0].ref)
+    const singleResult = JSON.parse(JSON.stringify(initDocJSON))
+    singleResult.children[0].children.splice(0, 1)
+    expect(doc.toJSON()).eql(singleResult)
+
+    // remove tree
+    doc.removeElement(doc.body.children[0].ref)
+    const treeResult = JSON.parse(JSON.stringify(initDocJSON))
+    delete treeResult.children
+    expect(doc.toJSON()).eql(treeResult)
+
+    // remove non-existed element
+    doc.removeElement('xxx')
+    expect(doc.toJSON()).eql(treeResult)
   })
   it('updateAttrs (ref, attr)', () => {
-    // todo
+    initDoc(doc)
+    expect(doc.toJSON()).eql(initDocJSON)
+
+    const ref = doc.body.children[0].ref
+
+    // cover
+    doc.updateAttrs(ref, { x: 'c' })
+    const result = JSON.parse(JSON.stringify(initDocJSON))
+    result.children[0].attr = { x: 'c' }
+    expect(doc.toJSON()).eql(result)
+
+    // add
+    doc.updateAttrs(ref, { y: 'd' })
+    result.children[0].attr = { x: 'c', y: 'd' }
+    expect(doc.toJSON()).eql(result)
+
+    // more than one attribute
+    doc.updateAttrs(ref, { y: 'f', g: 'g' })
+    result.children[0].attr = { x: 'c', y: 'f', g: 'g' }
+    expect(doc.toJSON()).eql(result)
   })
   it('updateStyle (ref, style)', () => {
-    // todo
+    initDoc(doc)
+    expect(doc.toJSON()).eql(initDocJSON)
+    const ref = doc.body.children[0].ref
+    doc.updateStyle(ref, { color: '#000000' })
+    const result = JSON.parse(JSON.stringify(initDocJSON))
+    result.children[0].style = { color: '#000000' }
+    expect(doc.toJSON()).eql(result)
   })
-  it('addEvent (ref, type)', () => {
-    // todo
-  })
-  it('removeEvent (ref, type)', () => {
-    // todo
-  })
-  it('toJSON ()', () => {
-    // todo
+  it('addEvent (ref, type), removeEvent (ref, type)', () => {
+    const result = JSON.parse(JSON.stringify(initDocJSON))
+    initDoc(doc)
+    expect(doc.toJSON()).eql(result)
+    const ref = doc.body.children[0].ref
+    doc.addEvent(ref, 'click')
+    result.children[0].event = ['click']
+    expect(doc.toJSON()).eql(result)
+    doc.addEvent(ref, 'click')
+    expect(doc.toJSON()).eql(result)
+    doc.addEvent(ref, 'x')
+    result.children[0].event = ['click', 'x']
+    expect(doc.toJSON()).eql(result)
+    doc.removeEvent(ref, 'x')
+    result.children[0].event = ['click']
+    expect(doc.toJSON()).eql(result)
+    doc.removeEvent(ref, 'click')
+    delete result.children[0].event
+    expect(doc.toJSON()).eql(result)
   })
 })

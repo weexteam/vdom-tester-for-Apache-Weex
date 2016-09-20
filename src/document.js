@@ -2,6 +2,8 @@
  * @fileOverview dom module APIs
  */
 
+const { clonePlainObject } = require('./util')
+
 const ROOT_TYPE_LIST = ['div', 'container', 'list', 'scroller']
 
 class Document {
@@ -27,6 +29,8 @@ class Document {
       console.error(`[document] root type "${config.type}" must be one of <${ROOT_TYPE_LIST.join('>, <')}>`)
       return
     }
+
+    config = clonePlainObject(config)
 
     const body = this.body = new Element(config)
     this.refs._root = this.body
@@ -60,6 +64,8 @@ class Document {
       return
     }
 
+    config = clonePlainObject(config)
+
     const parent = this.refs[parentRef]
 
     // validate parentRef
@@ -75,6 +81,26 @@ class Document {
   }
 
   moveElement (ref, parentRef, index) {
+    // validate ref
+    if (!ref) {
+      console.error(`[document] moveElement() should have ref.`)
+      return
+    }
+    if (!this.refs[ref]) {
+      console.error(`[document] moveElement() the ref "${ref}" is not existed.`)
+      return
+    }
+
+    // validate parentRef
+    if (!parentRef) {
+      console.error(`[document] moveElement() should have parent ref.`)
+      return
+    }
+    if (!this.refs[parentRef]) {
+      console.error(`[document] moveElement() the parent ref "${parentRef}" is not existed.`)
+      return
+    }
+
     const el = this.refs[ref]
     const oldParent = this.refs[el.parentRef]
     const oldIndex = oldParent.children.indexOf(el)
@@ -98,8 +124,30 @@ class Document {
   }
 
   removeElement (ref) {
+    // validate ref
+    if (!ref) {
+      console.error(`[document] removeElement() should have ref.`)
+      return
+    }
+    if (!this.refs[ref]) {
+      console.error(`[document] removeElement() the ref "${ref}" is not existed.`)
+      return
+    }
+
     const parentRef = this.refs[ref].parentRef
+
+    // validate parentRef
+    if (!parentRef) {
+      console.error(`[document] removeElement() should have parent ref.`)
+      return
+    }
+    if (!this.refs[parentRef]) {
+      console.error(`[document] removeElement() the parent ref "${parentRef}" is not existed.`)
+      return
+    }
+
     const parent = this.refs[parentRef]
+
     removeEl(this, ref)
     if (parent) {
       parent.$update(this, { removeElement: ref })
@@ -107,6 +155,7 @@ class Document {
   }
 
   updateAttrs (ref, attr) {
+    attr = clonePlainObject(attr)
     const el = this.refs[ref]
     for (const i in attr) {
       el.attr[i] = attr[i]
@@ -115,6 +164,7 @@ class Document {
   }
 
   updateStyle (ref, style) {
+    style = clonePlainObject(style)
     const el = this.refs[ref]
     for (const i in style) {
       el.style[i] = style[i]
@@ -175,11 +225,11 @@ function removeEl (doc, ref) {
   const parent = doc.refs[el.parentRef]
   const index = parent.children.indexOf(el)
   const children = el.children || []
-  parent.children.splice(index, 1)
-  delete doc.refs[ref]
   children.forEach(function (child) {
     removeEl(doc, child.ref)
   })
+  parent.children.splice(index, 1)
+  delete doc.refs[ref]
 }
 
 class Element {
@@ -211,7 +261,7 @@ class Element {
       })
     }
 
-    return result
+    return clonePlainObject(result)
   }
 
   $update (doc, changes) {
