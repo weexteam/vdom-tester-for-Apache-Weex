@@ -11,21 +11,25 @@ const {
 
 const { clonePlainObject } = require('../lib/util')
 
-describe.only('Instance Class', () => {
+describe('Instance Class', () => {
   const fooFramework = {
     createInstance (id, code) {
       /* eslint-disable no-eval */
       eval('with (this) {' + code + '}')
       /* eslint-enable no-eval */
+    },
+    getRoot () {
+      return { ref: 'ROOT' }
     }
   }
   sinon.spy(fooFramework, 'createInstance')
+  sinon.spy(fooFramework, 'getRoot')
   fooFramework.refreshInstance = sinon.spy()
   fooFramework.destroyInstance = sinon.spy()
   fooFramework.registerModules = sinon.spy()
   fooFramework.registerComponents = sinon.spy()
   fooFramework.registerMethods = sinon.spy()
-  fooFramework.callJS = sinon.spy()
+  fooFramework.receiveTasks = sinon.spy()
 
   const runtime = new Runtime(fooFramework)
   const env = clonePlainObject(runtime.target.WXEnvironment)
@@ -38,7 +42,8 @@ describe.only('Instance Class', () => {
     fooFramework.registerModules.reset()
     fooFramework.registerComponents.reset()
     fooFramework.registerMethods.reset()
-    fooFramework.callJS.reset()
+    fooFramework.receiveTasks.reset()
+    fooFramework.getRoot.reset()
   })
 
   it('create by constructor', () => {
@@ -85,23 +90,105 @@ describe.only('Instance Class', () => {
   })
 
   it('fireEvent & callback', () => {
-    // todo
+    const instance = new Instance(runtime)
+    const id = instance.id
+    instance.$create(sampleCode)
+    instance.$fireEvent('_root', 'appear', { x: 1 })
+    expect(fooFramework.receiveTasks.args.length).eql(1)
+    expect(fooFramework.receiveTasks.args[0]).eql([id, [
+      { method: 'fireEvent', args: ['_root', 'appear', { x: 1 }, null] }
+    ]])
+    instance.$fireEvent('_root', 'click', { y: 2 }, { attr: { z: 3 }})
+    expect(fooFramework.receiveTasks.args.length).eql(2)
+    expect(fooFramework.receiveTasks.args[1]).eql([id, [
+      { method: 'fireEvent', args: ['_root', 'click', { y: 2 }, { attr: { z: 3 }}] }
+    ]])
+    instance.$callback('cbId1', { xx: 11 })
+    expect(fooFramework.receiveTasks.args.length).eql(3)
+    expect(fooFramework.receiveTasks.args[2]).eql([id, [
+      { method: 'callback', args: ['cbId1', { xx: 11 }, null] }
+    ]])
+    instance.$callback('cbId1', { xxx: 111 }, true)
+    expect(fooFramework.receiveTasks.args.length).eql(4)
+    expect(fooFramework.receiveTasks.args[3]).eql([id, [
+      { method: 'callback', args: ['cbId1', { xxx: 111 }, true] }
+    ]])
+    instance.$callback('cbId2', { xxxx: 1111 }, true)
+    expect(fooFramework.receiveTasks.args.length).eql(5)
+    expect(fooFramework.receiveTasks.args[4]).eql([id, [
+      { method: 'callback', args: ['cbId2', { xxxx: 1111 }, true] }
+    ]])
+    instance.$destroy()
   })
 
   it('get whole virtual-DOM JSON', () => {
-    // todo
+    const instance = new Instance(runtime)
+    instance.$create(sampleCode)
+    const result = instance.$getRoot()
+    expect(fooFramework.getRoot.args.length).eql(1)
+    expect(result).eql({ ref: 'ROOT' })
+    instance.$destroy()
   })
 
   it('listen for callNative', () => {
-    // todo
+    const instance = new Instance(runtime)
+    const id = instance.id
+    const spy = sinon.spy()
+    instance.oncall('a', 'b', spy)
+    runtime.modules.a = {
+      b: sinon.spy()
+    }
+    instance.$create(`callNative('${id}', [{ module: 'a', method: 'b', args: [1, 2, 3]}])`)
+    expect(runtime.modules.a.b.args.length).eql(1)
+    expect(runtime.modules.a.b.args[0][0]).equal(instance)
+    expect(runtime.modules.a.b.args[0][1]).equal(instance.doc)
+    expect(runtime.modules.a.b.args[0].slice(2)).eql([1, 2, 3])
+    expect(instance.history.callNative.length).eql(1)
+    expect(instance.history.callNative[0].module).eql('a')
+    expect(instance.history.callNative[0].method).eql('b')
+    expect(instance.history.callNative[0].args).eql([1, 2, 3])
+    expect(spy.args.length).eql(1)
+    expect(spy.args[0]).eql([1, 2, 3])
+    instance.$destroy()
   })
 
   it('mock module APIs', () => {
-    // todo
+    const instance = new Instance(runtime)
+    const id = instance.id
+    const spy = sinon.spy()
+    runtime.modules.a = {
+      b: sinon.spy()
+    }
+    instance.mockModuleAPI('a', 'b', spy)
+    instance.$create(`callNative('${id}', [{ module: 'a', method: 'b', args: [1, 2, 3]}])`)
+    expect(runtime.modules.a.b.args.length).eql(0)
+    expect(spy.args.length).eql(1)
+    expect(spy.args[0][0]).equal(instance)
+    expect(spy.args[0][1]).equal(instance.doc)
+    expect(spy.args[0][2]).equal(runtime.modules.a.b)
+    expect(spy.args[0].slice(3)).eql([1, 2, 3])
+    instance.$destroy()
   })
 
   it('get real DOM JSON', () => {
-    // todo
+    const instance = new Instance(runtime)
+    instance.$create(sampleCode)
+    instance.doc.createBody({
+      type: 'div',
+      children: [
+        { ref: '1', type: 'text', attr: { value: 'Hello' }},
+        { ref: '2', type: 'img', attr: { src: '...' }}
+      ]
+    })
+    const result = instance.getRealRoot()
+    expect(result).eql({
+      type: 'div',
+      children: [
+        { type: 'text', attr: { value: 'Hello' }},
+        { type: 'img', attr: { src: '...' }}
+      ]
+    })
+    instance.$destroy()
   })
 
   it('watch DOM changes', () => {
