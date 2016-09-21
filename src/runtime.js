@@ -28,19 +28,19 @@ class Runtime {
 
     // Bind global methods for JS framework.
     this.loggers = []
-    this.target.nativeLog = function (...args) {
-      const level = args[args.length - 1]
+    this.target.nativeLog = (...args) => {
+      let level = args[args.length - 1]
       let levelIndex = LOG_LEVELS.indexOf(level)
       if (levelIndex === -1) {
         levelIndex = 1
+        level = LOG_LEVELS[1]
       }
       else {
         args.pop()
       }
       this.loggers.forEach(logger => {
         if (!logger.level) {
-          args.unshift(level.substr(2).toLowerCase())
-          logger.handler.apply(null, args)
+          logger.handler.apply(null, [level.substr(2).toLowerCase()].concat(args))
         }
         else if (LOG_LEVELS.indexOf(logger.level) === levelIndex) {
           logger.handler.apply(null, args)
@@ -63,9 +63,9 @@ class Runtime {
       handler = type
       type = ''
     }
-    let level = ''
-    if (LOG_LEVELS.indexOf(level) >= 0) {
-      level = '__' + type.toUpperCase()
+    let level = '__' + type.toUpperCase()
+    if (LOG_LEVELS.indexOf(level) < 0) {
+      level = ''
     }
     this.loggers.push({ level, handler })
   }
