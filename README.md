@@ -86,7 +86,7 @@ instance.play()
 instance.pause()
 ```
 
-### Weex advanced APIs (experimental)
+### Weex advanced APIs (not work yet)
 
 ```javascript
 runtime.test([inputFileOrCode, outputFileOrCode])
