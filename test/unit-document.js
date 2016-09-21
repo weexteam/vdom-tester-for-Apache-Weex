@@ -21,7 +21,7 @@ const basicElementConfig = {
   ]
 }
 
-function initDoc(doc) {
+function initDoc (doc) {
   doc.createBody(basicRootConfig)
   doc.addElement(doc.body.ref, basicElementConfig, -1)
   doc.addElement(
@@ -38,7 +38,7 @@ const initDocJSON = {
     { type: 'div', attr: { x: 'a' }, children: [
       { type: 'text', attr: { value: 'World' }},
       { type: 'text', attr: { value: 'Hello' }}
-    ]}
+    ] }
   ]
 }
 
@@ -106,7 +106,7 @@ describe('Document Class', () => {
       attr: { x: 'a' },
       style: { y: 'b' },
       children: [
-        { type: 'div', attr: { x: 'a' }, children: [{ type: 'text', attr: { value: 'Hello' }}]}
+        { type: 'div', attr: { x: 'a' }, children: [{ type: 'text', attr: { value: 'Hello' }}] }
       ]
     })
     doc.addElement(doc.body.children[0].ref, { ref: '3', type: 'image', attr: { src: '...' }}, 0)
@@ -118,7 +118,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'image', attr: { src: '...' }},
           { type: 'text', attr: { value: 'Hello' }}
-        ]}
+        ] }
       ]
     })
 
@@ -132,7 +132,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'image', attr: { src: '...' }},
           { type: 'text', attr: { value: 'Hello' }}
-        ]}
+        ] }
       ]
     })
 
@@ -146,7 +146,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'image', attr: { src: '...' }},
           { type: 'text', attr: { value: 'Hello' }}
-        ]}
+        ] }
       ]
     })
 
@@ -160,7 +160,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'image', attr: { src: '...' }},
           { type: 'text', attr: { value: 'Hello' }}
-        ]}
+        ] }
       ]
     })
   })
@@ -180,7 +180,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'text', attr: { value: 'World' }},
           { type: 'text', attr: { value: 'Hello' }}
-        ]}
+        ] }
       ]
     })
 
@@ -194,7 +194,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'text', attr: { value: 'World' }},
           { type: 'text', attr: { value: 'Hello' }}
-        ]}
+        ] }
       ]
     })
 
@@ -208,7 +208,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'text', attr: { value: 'Hello' }},
           { type: 'text', attr: { value: 'World' }}
-        ]}
+        ] }
       ]
     })
 
@@ -222,7 +222,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'text', attr: { value: 'Hello' }},
           { type: 'text', attr: { value: 'World' }}
-        ]}
+        ] }
       ]
     })
 
@@ -236,7 +236,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'text', attr: { value: 'World' }},
           { type: 'text', attr: { value: 'Hello' }}
-        ]}
+        ] }
       ]
     })
 
@@ -250,7 +250,7 @@ describe('Document Class', () => {
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'text', attr: { value: 'Hello' }},
           { type: 'text', attr: { value: 'World' }}
-        ]}
+        ] }
       ]
     })
 
@@ -264,7 +264,7 @@ describe('Document Class', () => {
         { type: 'text', attr: { value: 'World' }},
         { type: 'div', attr: { x: 'a' }, children: [
           { type: 'text', attr: { value: 'Hello' }}
-        ]}
+        ] }
       ]
     })
   })
@@ -408,7 +408,7 @@ describe('Element Class', () => {
     expect(parentSpy.args.length).eql(6)
     expect(spy.args[5]).eql(['1', { addElement: { ref: '11', type: 'text' }, index: -1 }])
     expect(parentSpy.args[5]).eql(['1', { addElement: { ref: '11', type: 'text' }, index: -1 }])
-    doc.addElement(doc.body.children[0].ref, { ref: '12', type: 'div', children: [{ ref: '13', type: 'text' }]}, -1)
+    doc.addElement(doc.body.children[0].ref, { ref: '12', type: 'div', children: [{ ref: '13', type: 'text' }] }, -1)
     expect(spy.args.length).eql(7)
     expect(parentSpy.args.length).eql(7)
     expect(spy.args[6]).eql([

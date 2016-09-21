@@ -1,23 +1,17 @@
 const chai = require('chai')
-const sinon = require('sinon')
-const sinonChai = require('sinon-chai')
 const { expect } = chai
-chai.use(sinonChai)
 
 const {
   Runtime,
-  Instance,
-  DEFAULT_MODULES,
-  DEFAULT_COMPONENTS,
-  DEFAULT_ENV
+  Instance
 } = require('../')
 
-let currentInstanceId = 1
+const currentInstanceId = 1
 const fooFramework = {
   createInstance (id, code) {
-    with (this) {
-      eval(code)
-    }
+    /* eslint-disable no-eval */
+    eval('with (this) {' + code + '}')
+    /* eslint-enable no-eval */
   },
   refreshInstance () {},
   destroyInstance () {},
@@ -37,13 +31,13 @@ describe('Vanilla Test', () => {
       `callNative('${currentInstanceId}', [{ module: 'dom', method: 'createFinish', args: []}])`
     ].join('\n')
     instance.$create(code)
-    expect(instance.getRealRoot()).eql({ type: 'div', children: [ { type: 'text', attr: { value: 'Hello' } } ] })
+    expect(instance.getRealRoot()).eql({ type: 'div', children: [{ type: 'text', attr: { value: 'Hello' }}] })
     expect(instance.history.callNative.map(task => {
       return { module: task.module, method: task.method, args: task.args }
     })).eql([
-      { module: 'dom', method: 'createBody', args: [{ ref: '_root', type: 'div' }]},
-      { module: 'dom', method: 'addElement', args: ['_root', { ref: 'first', type: 'text', attr: { value: 'Hello' }}, -1]},
-      { module: 'dom', method: 'createFinish', args: []}
+      { module: 'dom', method: 'createBody', args: [{ ref: '_root', type: 'div' }] },
+      { module: 'dom', method: 'addElement', args: ['_root', { ref: 'first', type: 'text', attr: { value: 'Hello' }}, -1] },
+      { module: 'dom', method: 'createFinish', args: [] }
     ])
     expect(instance.history.refresh.map(task => {
       return { type: task.type }

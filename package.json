@@ -9,8 +9,8 @@
     "prepublish": "npm run prepare",
     "build": "buble -i src -o lib",
     "dev": "gazeer -p \"src/*.js\" -c \"npm run lint && npm run build\"",
-    "lint": "eslint src",
-    "lint:fix": "eslint --fix src",
+    "lint": "eslint src test",
+    "lint:fix": "eslint --fix src test",
     "test": "mocha",
     "test:dev": "mocha -w",
     "clear": "rm -Rf lib/*"
