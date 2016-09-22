@@ -102,6 +102,15 @@ describe('Vanilla Test', () => {
         { type: 'text', attr: { value: 'Hello World' }, style: { fontSize: 48 }}
       ]
     })
+    expect(instance.history.callNative.map(task => {
+      return { module: task.module, method: task.method, argsLength: task.args.length }
+    })).eql([
+      { module: 'dom', method: 'createBody', argsLength: 1 },
+      { module: 'dom', method: 'addElement', argsLength: 3 },
+      { module: 'dom', method: 'addElement', argsLength: 3 },
+      { module: 'dom', method: 'addEvent', argsLength: 2 },
+      { module: 'dom', method: 'createFinish', argsLength: 0 }
+    ])
     expect(instance.history.refresh.map(task => {
       return { type: task.type }
     })).eql([{ type: 'createInstance' }])
