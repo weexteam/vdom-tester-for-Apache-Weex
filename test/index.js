@@ -12,32 +12,26 @@ config.sendTasks = config.Document.handler = function () {
   sendTasksHandler.apply(null, arguments)
 }
 
-
-// init foo framework
-const currentInstanceId = 1
-const fooFramework = {
-  init: function (config) {
-    this.config = config
-  },
-  createInstance (id, code) {
-    /* eslint-disable no-eval */
-    eval('with (this) {' + code + '}')
-    /* eslint-enable no-eval */
-  },
-  refreshInstance () {},
-  destroyInstance () {},
-  registerModules () {},
-  registerComponents () {},
-  registerMethods () {},
-  callJS () {}
-}
-fooFramework.init(config)
-
-// init vanilla framework
-const vanillaFramework = require('weex-js-framework/src/frameworks/vanilla')
-vanillaFramework.init(config)
-
 describe('Raw Test', () => {
+  const currentInstanceId = 1
+  const fooFramework = {
+    init: function (config) {
+      this.config = config
+    },
+    createInstance (id, code) {
+      /* eslint-disable no-eval */
+      eval('with (this) {' + code + '}')
+      /* eslint-enable no-eval */
+    },
+    refreshInstance () {},
+    destroyInstance () {},
+    registerModules () {},
+    registerComponents () {},
+    registerMethods () {},
+    callJS () {}
+  }
+  fooFramework.init(config)
+
   it('could check real DOM structure in render', () => {
     const runtime = new Runtime(fooFramework)
     const instance = new Instance(runtime)
@@ -62,6 +56,9 @@ describe('Raw Test', () => {
 })
 
 describe('Vanilla Test', () => {
+  const vanillaFramework = require('weex-js-framework/src/frameworks/vanilla')
+  vanillaFramework.init(config)
+
   it('could check real DOM structure in render', () => {
     const runtime = new Runtime(vanillaFramework)
     const instance = new Instance(runtime)
