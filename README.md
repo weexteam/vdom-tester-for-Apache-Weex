@@ -6,6 +6,12 @@ Virtual-DOM test driver for Weex.
 
 ## Usage
 
+In Weex virtual-DOM test driver, you can create a `Runtime` which can simulate a native app JavaScript runtime. The `Runtime` instance can be initialized with a Weex JS framework like Vanilla, Vue, React etc.
+
+Then in the runtime you can run a `Instance` with JS Bundle which is based on the target framework.
+
+This can be used to test whether the framework work well. For example: make sure a certain JS Bundle could generate a certain "real" DOM tree in renderer as expect, or do a certain series of JS-bridge calls.
+
 ### Weex JS runtime APIs
 
 ```javascript
@@ -17,6 +23,8 @@ import {
 } from 'weex-vdom-tester'
 
 // Create a Weex JavaScript runtime for a certain Weex JS framework.
+// You can also simulate the native environment which includes
+// global env variables, native modules & components.
 const runtime = new Runtime(jsFramework, {
   // modules: DEFAULT_MODULES,
   // components: DEFAULT_COMPONENTS
@@ -24,11 +32,14 @@ const runtime = new Runtime(jsFramework, {
 })
 
 // Listen `nativeLog` calls.
+// The `type` is in `['debug', 'log', 'info', 'warn', 'error']`.
+// If no `type` defined than it will listen all type of logs.
 runtime.onlog((type, args) => { ... })
 runtime.onlog(type, (args) => { ... })
 runtime.offlog((args) => { ... })
 
 // Register more modules and components.
+// You can simulate all module APIs by this.
 runtime.registerModules({
   x: {
     foo: (instance, document, ...args) => {},
@@ -46,10 +57,14 @@ runtime.registerComponents([
 import { Instance } from 'weex-vdom-tester'
 
 // Create a Weex instance in a certain runtime.
-// The `runtime` parameter is optional.
 const instance = new Instance(runtime)
+// Each instance has an id.
+instance.id
+// Each instance has a document object to record what it will render.
+instance.doc
 
 // Send commands to Weex JS runtime about this instance.
+// See more details in Weex documentations.
 instance.$create(code, config, data)
 instance.$refresh(data)
 instance.$destroy()
