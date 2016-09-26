@@ -12,6 +12,8 @@ Then in the runtime you can run a `Instance` with JS Bundle which is based on th
 
 This can be used to test whether the framework work well. For example: make sure a certain JS Bundle could generate a certain "real" DOM tree in renderer as expect, or do a certain series of JS-bridge calls.
 
+See `test/case.js` for some use case.
+
 ### Weex JS runtime APIs
 
 ```javascript
@@ -110,13 +112,4 @@ instance.history.refresh[{ timestamp, data }]
 // Control the connection status to Weex JS runtime.
 instance.play()
 instance.pause()
-```
-
-### Weex advanced APIs (not work yet)
-
-```javascript
-runtime.test([inputFileOrCode, outputFileOrCode])
-runtime.test([inputFileOrCode, ...refreshs, outputFileOrCode])
-runtime.test([inputFileOrCode, ...events, outputFileOrCode])
-runtime.test([inputFileOrCode, ...mockCallbacks, outputFileOrCode])
 ```
