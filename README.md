@@ -46,6 +46,17 @@ runtime.registerModules({
     bar: (instance, document, ...args) => {}
   }
 })
+// Also if the vdom tester have implemented the module, you can just pass
+// an Array of method names to register them.
+runtime.registerModules({
+  "modal": [
+    "alert",
+    "toast",
+    "prompt",
+    "confirm"
+  ]
+})
+// Register native components.
 runtime.registerComponents([
   x: { type: 'x', append: true }
 ])

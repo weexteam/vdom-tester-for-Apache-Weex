@@ -18,6 +18,11 @@ class Runtime {
   constructor (jsFramework, options) {
     options = options || {}
 
+    if (!jsFramework) {
+      console.error(`[runtime] no JS framework given, init failed.`)
+      return
+    }
+
     // Init instance management.
     this.instanceMap = {}
     this._nextInstanceId = 1
@@ -59,6 +64,10 @@ class Runtime {
     this.registerComponents(options.components || DEFAULT_COMPONENTS)
   }
   onlog (type, handler) {
+    if (!this.target) {
+      console.error(`[runtime] no JS framework given, this runtime is not working.`)
+      return
+    }
     if (typeof type === 'function') {
       handler = type
       type = ''
@@ -70,6 +79,10 @@ class Runtime {
     this.loggers.push({ level, handler })
   }
   offlog (handler) {
+    if (!this.target) {
+      console.error(`[runtime] no JS framework given, this runtime is not working.`)
+      return
+    }
     this.loggers.some((logger, index) => {
       if (logger.handler === handler) {
         this.loggers.splice(index, 1)
@@ -78,6 +91,10 @@ class Runtime {
     })
   }
   registerModules (modules) {
+    if (!this.target) {
+      console.error(`[runtime] no JS framework given, this runtime is not working.`)
+      return
+    }
     const target = this.target
     modules.forEach(module => {
       for (const name in module) {
@@ -102,10 +119,18 @@ class Runtime {
     })
   }
   registerComponents (components) {
+    if (!this.target) {
+      console.error(`[runtime] no JS framework given, this runtime is not working.`)
+      return
+    }
     const target = this.target
     components.forEach(component => target.registerComponents([component]))
   }
   _genInstanceId () {
+    if (!this.target) {
+      console.error(`[runtime] no JS framework given, this runtime is not working.`)
+      return
+    }
     return this._nextInstanceId++
   }
 }
