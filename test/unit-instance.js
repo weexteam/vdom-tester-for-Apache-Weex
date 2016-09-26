@@ -34,6 +34,8 @@ describe('Instance Class', () => {
   const runtime = new Runtime(fooFramework)
   const env = clonePlainObject(runtime.target.WXEnvironment)
   const sampleCode = '"hello world"'
+  const circleData = { x: 1 }
+  circleData.y = circleData
 
   afterEach(() => {
     fooFramework.createInstance.reset()
@@ -47,7 +49,11 @@ describe('Instance Class', () => {
   })
 
   it('create by constructor', () => {
-    const instance = new Instance(runtime)
+    let instance = new Instance()
+    expect(instance).is.an.object
+    expect(instance.id).is.undefined
+
+    instance = new Instance(runtime)
     expect(instance).is.an.object
     expect(instance.id).is.a.string
     expect(instance._target).equal(fooFramework)
@@ -74,6 +80,14 @@ describe('Instance Class', () => {
     instance2.$destroy()
     expect(fooFramework.destroyInstance.args.length).eql(2)
     expect(fooFramework.destroyInstance.args[1]).eql([id2])
+
+    const instance3 = new Instance(runtime)
+    instance3.$create('')
+    expect(fooFramework.createInstance.args.length).eql(2)
+    instance3.$create(sampleCode, circleData)
+    expect(fooFramework.createInstance.args.length).eql(2)
+    instance3.$create(sampleCode, null, function () {})
+    expect(fooFramework.createInstance.args.length).eql(2)
   })
 
   it('refresh', () => {
@@ -84,6 +98,8 @@ describe('Instance Class', () => {
     instance.$refresh({ x: 1 })
     expect(fooFramework.refreshInstance.args.length).eql(1)
     expect(fooFramework.refreshInstance.args[0]).eql([id, { x: 1 }])
+    instance.$refresh(circleData)
+    expect(fooFramework.refreshInstance.args.length).eql(1)
     instance.$destroy()
     expect(fooFramework.destroyInstance.args.length).eql(1)
     expect(fooFramework.destroyInstance.args[0]).eql([id])
@@ -192,10 +208,30 @@ describe('Instance Class', () => {
   })
 
   it('watch DOM changes', () => {
-    // todo
-  })
-
-  it('do not response to inactive instance', () => {
-    // todo
+    const instance = new Instance(runtime)
+    instance.$create(sampleCode)
+    instance.doc.createBody({
+      type: 'div',
+      children: [
+        { ref: '1', type: 'text', attr: { value: 'Hello' }},
+        { ref: '2', type: 'img', attr: { src: '...' }}
+      ]
+    })
+    const spy = sinon.spy()
+    instance.watchDOMChanges(spy)
+    instance.doc.updateAttrs('1', { value: 'Weex' })
+    expect(spy.args.length).eql(1)
+    expect(spy.args[0]).eql(['1', { attr: { value: 'Weex' }}])
+    const spy2 = sinon.spy()
+    instance.watchDOMChanges(instance.doc.body.children[0], spy2)
+    instance.doc.updateAttrs('1', { value: 'World' })
+    expect(spy.args.length).eql(2)
+    expect(spy2.args.length).eql(1)
+    expect(spy.args[1]).eql(['1', { attr: { value: 'World' }}])
+    expect(spy2.args[0]).eql(['1', { attr: { value: 'World' }}])
+    const spy3 = sinon.spy()
+    instance.watchDOMChanges({}, spy3)
+    instance.doc.updateAttrs('1', { value: 'XXX' })
+    expect(spy3.args.length).eql(0)
   })
 })

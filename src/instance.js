@@ -1,10 +1,14 @@
-const { Document } = require('./document')
+const { Document, Element } = require('./document')
 const { Runtime } = require('./runtime')
 const { clonePlainObject } = require('./util')
 
 class Instance {
   constructor (runtime) {
-    this._runtime = runtime || new Runtime()
+    if (!(runtime instanceof Runtime)) {
+      console.error(`[instance] can not create a instance without runtime`)
+      return
+    }
+    this._runtime = runtime
     this._target = this._runtime.target
     this.id = this._runtime._genInstanceId().toString()
     this._runtime.instanceMap[this.id] = this
@@ -77,6 +81,24 @@ class Instance {
     if (!this.active) {
       return
     }
+    if (typeof code !== 'string' || !code) {
+      console.error(`[instance] can not createInstance without code`)
+      return
+    }
+    try {
+      clonePlainObject(config || {})
+    }
+    catch (e) {
+      console.error(`[instance] "config" must be plain object or falsy value when createInstance\n${e}`)
+      return
+    }
+    try {
+      clonePlainObject(data || {})
+    }
+    catch (e) {
+      console.error(`[instance] "data" must be plain object or falsy value when createInstance\n${e}`)
+      return
+    }
     const target = this._target
     this.history.refresh.push({
       type: 'createInstance',
@@ -93,6 +115,13 @@ class Instance {
   }
   $refresh (data) {
     if (!this.active) {
+      return
+    }
+    try {
+      clonePlainObject(data || {})
+    }
+    catch (e) {
+      console.error(`[instance] "data" must be plain object or falsy value when refreshInstance\n${e}`)
       return
     }
     const target = this._target
@@ -125,6 +154,28 @@ class Instance {
     if (!this.active) {
       return
     }
+    if (typeof ref !== 'string' || !ref) {
+      console.error(`[instance] "ref" must be truthy string in fireEvent`)
+      return
+    }
+    if (typeof type !== 'string' || !type) {
+      console.error(`[instance] event "type" must be truthy string`)
+      return
+    }
+    try {
+      clonePlainObject(data || {})
+    }
+    catch (e) {
+      console.error(`[instance] "data" must be plain object or falsy value when fireEvent\n${e}`)
+      return
+    }
+    try {
+      clonePlainObject(domChanges || {})
+    }
+    catch (e) {
+      console.error(`[instance] "domChanges" must be plain object or falsy value when fireEvent\n${e}`)
+      return
+    }
     const target = this._target
     this.history.callJS.push({
       method: 'fireEvent',
@@ -138,6 +189,17 @@ class Instance {
   }
   $callback (funcId, data, ifLast) {
     if (!this.active) {
+      return
+    }
+    if (typeof funcId !== 'string' || !funcId) {
+      console.error(`[instance] "funcId" must be truthy string in fireEvent`)
+      return
+    }
+    try {
+      clonePlainObject(data || {})
+    }
+    catch (e) {
+      console.error(`[instance] "data" must be plain object or falsy value when callback\n${e}`)
       return
     }
     const target = this._target
@@ -186,6 +248,10 @@ class Instance {
     if (typeof element === 'function') {
       handler = element
       element = this.doc.body
+    }
+    if (!(element instanceof Element)) {
+      console.error(`[instance] you can only listen an Element but the target you want listen to is not`)
+      return
     }
     element.$addListener(this.doc, handler)
   }
