@@ -52,7 +52,7 @@ class Runtime {
         }
       })
     }
-    this.callNative = (id, tasks) => {
+    this.target.callNative = (id, tasks) => {
       if (this.instanceMap[id]) {
         this.instanceMap[id].callNative(id, tasks)
       }

@@ -27,8 +27,7 @@ class Instance {
   }
   _initCall () {
     const runtime = this._runtime
-    const target = this._target
-    target.callNative = (id, tasks) => {
+    this.callNative = (id, tasks) => {
       if (!this.active) {
         return
       }
@@ -111,7 +110,7 @@ class Instance {
     config.env = clonePlainObject(target.WXEnvironment || {})
     return ((callNative) => {
       return target.createInstance(this.id, code, config, data)
-    })(this._target.callNative.bind(this._target))
+    })(this.callNative.bind(this))
   }
   $refresh (data) {
     if (!this.active) {
