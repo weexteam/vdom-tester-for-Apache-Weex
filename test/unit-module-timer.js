@@ -5,7 +5,6 @@ const { expect } = chai
 chai.use(sinonChai)
 
 const timer = require('../lib/modules/timer')
-console.log(timer.setTimeout)
 
 describe('Module: timer', () => {
   const instance = { id: 'foo', extension: {}}
@@ -17,10 +16,10 @@ describe('Module: timer', () => {
 
   it('setTimeout', done => {
     const begin = Date.now()
-    instance.$callback = (funcId, data, isLast) => {
+    instance.$callback = (funcId, data, ifKeepAlive) => {
       expect(funcId).eql('fooCallback')
       expect(data).is.null
-      expect(isLast).is.falsy
+      expect(ifKeepAlive).eql(false)
       expect(Date.now() - begin).within(400, 600)
       done()
     }
@@ -41,11 +40,11 @@ describe('Module: timer', () => {
   it('setInterval & clearInterval', done => {
     const begin = Date.now()
     let counter = 0
-    instance.$callback = (funcId, data, isLast) => {
+    instance.$callback = (funcId, data, ifKeepAlive) => {
       counter++
       expect(funcId).eql('fooCallback4')
       expect(data).is.null
-      expect(isLast).is.truthy
+      expect(ifKeepAlive).eql(true)
       expect(Date.now() - begin).within(300 * counter - 100, 300 * counter + 100)
     }
     timer.setInterval(instance, document, 'fooCallback4', 300)
