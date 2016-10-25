@@ -7,7 +7,7 @@ const {
 } = require('../')
 
 let sendTasksHandler = function () {}
-const { config } = require('weex-js-framework/src/runtime')
+const { config } = require('weex-js-runtime')
 config.sendTasks = config.Document.handler = function () {
   sendTasksHandler.apply(null, arguments)
 }

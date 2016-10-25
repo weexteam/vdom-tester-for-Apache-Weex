@@ -37,7 +37,7 @@
     "mocha": "^3.0.2",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
-    "weex-js-framework": "^0.17.0-alpha2"
+    "weex-js-runtime": "^0.17.0-alpha4"
   },
   "dependencies": {
     "jsonp": "^0.2.0",
