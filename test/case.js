@@ -56,7 +56,7 @@ describe('Raw Test', () => {
 })
 
 describe('Vanilla Test', () => {
-  const vanillaFramework = require('weex-js-framework/src/frameworks/vanilla')
+  const vanillaFramework = require('./framework-vanilla.js')
   vanillaFramework.init(config)
 
   it('could check real DOM structure in render', () => {
