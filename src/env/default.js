@@ -142,6 +142,23 @@ const DEFAULT_ENV = {
   "deviceWidth": 750
 }
 
+const scale = 2
+const DEFAULT_CSS_UNIT = {
+  REM: 12 * scale,
+  VW: DEFAULT_ENV.deviceWidth / 100,
+  VH: DEFAULT_ENV.deviceHeight / 100,
+  VMIN: Math.min(DEFAULT_ENV.deviceWidth, DEFAULT_ENV.deviceHeight) / 100,
+  VMAX: Math.max(DEFAULT_ENV.deviceWidth, DEFAULT_ENV.deviceHeight) / 100,
+  CM: 96 / 2.54 * scale,
+  MM: 96 / 25.4 * scale,
+  Q: 96 / 25.4 / 4 * scale,
+  IN: 96 * scale,
+  PT: 96 / 72 * scale,
+  PC: 96 / 6 * scale,
+  PX: scale
+}
+
 exports.DEFAULT_MODULES = DEFAULT_MODULES
 exports.DEFAULT_COMPONENTS = DEFAULT_COMPONENTS
 exports.DEFAULT_ENV = DEFAULT_ENV
+exports.DEFAULT_CSS_UNIT = DEFAULT_CSS_UNIT
