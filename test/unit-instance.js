@@ -67,16 +67,16 @@ describe('Instance Class', () => {
     const id = instance.id
     instance.$create(sampleCode)
     expect(fooFramework.createInstance.args.length).eql(1)
-    expect(fooFramework.createInstance.args[0]).eql([id, sampleCode, { env }, {}])
+    expect(fooFramework.createInstance.args[0]).eql([id, sampleCode, { env }, {}, { config: { env }, callbacks: undefined }])
     instance.$destroy()
     expect(fooFramework.destroyInstance.args.length).eql(1)
     expect(fooFramework.destroyInstance.args[0]).eql([id])
 
     const instance2 = new Instance(runtime)
     const id2 = instance2.id
-    instance2.$create(sampleCode, { x: 1 }, { y: 2 })
+    instance2.$create(sampleCode, { x: 1 }, { y: 2 }, { z: 3 })
     expect(fooFramework.createInstance.args.length).eql(2)
-    expect(fooFramework.createInstance.args[1]).eql([id2, sampleCode, { x: 1, env }, { y: 2 }])
+    expect(fooFramework.createInstance.args[1]).eql([id2, sampleCode, { y: 2, env }, { z: 3 }, { config: { y: 2, env }, callbacks: { x: 1 }}])
     instance2.$destroy()
     expect(fooFramework.destroyInstance.args.length).eql(2)
     expect(fooFramework.destroyInstance.args[1]).eql([id2])
@@ -84,9 +84,9 @@ describe('Instance Class', () => {
     const instance3 = new Instance(runtime)
     instance3.$create('')
     expect(fooFramework.createInstance.args.length).eql(2)
-    instance3.$create(sampleCode, circleData)
+    instance3.$create(sampleCode, null, circleData)
     expect(fooFramework.createInstance.args.length).eql(2)
-    instance3.$create(sampleCode, null, function () {})
+    instance3.$create(sampleCode, null, null, function () {})
     expect(fooFramework.createInstance.args.length).eql(2)
   })
 
@@ -94,7 +94,7 @@ describe('Instance Class', () => {
     const instance = new Instance(runtime)
     const id = instance.id
     instance.$create(sampleCode)
-    expect(fooFramework.createInstance.args[0]).eql([id, sampleCode, { env }, {}])
+    expect(fooFramework.createInstance.args[0]).eql([id, sampleCode, { env }, {}, { config: { env }, callbacks: undefined }])
     instance.$refresh({ x: 1 })
     expect(fooFramework.refreshInstance.args.length).eql(1)
     expect(fooFramework.refreshInstance.args[0]).eql([id, { x: 1 }])

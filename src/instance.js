@@ -76,7 +76,7 @@ class Instance {
     }
   }
 
-  $create (code, config, data) {
+  $create (code, callbacks, config, data) {
     if (!this.active) {
       return
     }
@@ -109,7 +109,7 @@ class Instance {
     data = clonePlainObject(data || {})
     config.env = clonePlainObject(target.WXEnvironment || {})
     return ((callNative) => {
-      return target.createInstance(this.id, code, config, data)
+      return target.createInstance(this.id, code, config, data, { config, callbacks })
     })(this.callNative.bind(this))
   }
   $refresh (data) {
